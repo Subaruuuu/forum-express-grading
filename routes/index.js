@@ -30,7 +30,11 @@ module.exports = (app, passport) => {
   app.get('/restaurants', authenticated, restController.getRestaurants)
 
   //get, edit, delete
-  app.get('/admin', authenticatedAdmin, (req, res) => res.redirect('/admin/restaurants'))
+  app.get('/admin', authenticatedAdmin, (req, res) => res.redirect('/admin/users'))
+
+  app.get('/admin/users', authenticatedAdmin, adminController.getUsers)
+  app.put('/admin/users/:id/toggleAdmin', authenticatedAdmin, adminController.toggleAdmin)
+
   app.get('/admin/restaurants', authenticatedAdmin, adminController.getRestaurants)
   app.get('/admin/restaurants/create', authenticatedAdmin, adminController.createRestaurant)
   app.post('/admin/restaurants', authenticatedAdmin, upload.single('image'), adminController.postRestaurant)
