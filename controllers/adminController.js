@@ -2,7 +2,8 @@ const fs = require('fs')
 
 const db = require('../models')
 const Restaurant = db.Restaurant
-
+const User = db.User
+const Category = db.Category
 const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 
@@ -10,15 +11,39 @@ const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 const adminController = {
   //get all restaurant
   getRestaurants: (req, res) => {
-    return Restaurant.findAll({ raw: true, nest: true })
+    return Restaurant.findAll({ raw: true, nest: true, include: [Category] })
       .then(restaurants => {
         return res.render('admin/restaurants', { restaurants: restaurants })
       })
   },
 
+  getUsers: (req, res) => {
+    return User.findAll({ raw: true, nest: true })
+      .then(users => {
+        return res.render('admin/users', { users: users })
+      })
+  },
+
+  toggleAdmin: (req, res) => {
+    return User.findByPk(req.params.id)
+      .then(user => {
+        console.log(user)
+        user.update({ isAdmin: !user.isAdmin })
+      })
+      .then(() => {
+        req.flash('success_messages', 'user was succesfully to update')
+        res.redirect('/admin/users')
+      })
+
+  },
+
+
   //get create restaurant page
   createRestaurant: (req, res) => {
-    return res.render('admin/create')
+    Category.findAll({ raw: true, nest: true })
+      .then(categories => {
+        return res.render('admin/create', { categories: categories })
+      })
   },
 
   //post create restaurant
@@ -39,6 +64,7 @@ const adminController = {
           opening_hours: req.body.opening_hours,
           description: req.body.description,
           image: file ? img.data.link : null,
+          CategoryId: req.body.categoryId
         }).then((restaurant) => {
           req.flash('success_messages', 'restaurant was successfully created')
           return res.redirect('/admin/restaurants')
@@ -52,7 +78,8 @@ const adminController = {
         address: req.body.address,
         opening_hours: req.body.opening_hours,
         description: req.body.description,
-        image: null
+        image: null,
+        CategoryId: req.body.categoryId
       }).then((restaurant) => {
         req.flash('success_messages', 'restaurant was successfully created')
         return res.redirect('/admin/restaurants')
@@ -64,7 +91,8 @@ const adminController = {
   getRestaurant: (req, res) => {
     return Restaurant.findByPk(req.params.id, {
       raw: true,
-      nest: true
+      nest: true,
+      include: [Category]
     }).then(restaurant => {
       return res.render('admin/restaurant', {
         restaurant: restaurant
@@ -74,12 +102,16 @@ const adminController = {
 
   //get edit restaurant detail
   editRestaurant: (req, res) => {
-    return Restaurant.findByPk(req.params.id, {
-      raw: true,
-      nest: true
-    }).then(restaurant => {
-      return res.render('admin/create', { restaurant: restaurant })
-    })
+    return Restaurant.findByPk(req.params.id, { raw: true, nest: true })
+      .then(restaurant => {
+        Category.findAll({ raw: true, nest: true })
+          .then(categories => {
+            return res.render('admin/create', {
+              restaurant: restaurant,
+              categories: categories
+            })
+          })
+      })
   },
 
   //post edit restaurant detail
@@ -102,6 +134,7 @@ const adminController = {
               opening_hours: req.body.opening_hours,
               description: req.body.description,
               image: file ? img.data.link : restaurant.image,
+              CategoryId: req.body.categoryId
             })
               .then((restaurant) => {
                 req.flash('success_messages', 'restaurant was successfully to update')
@@ -119,7 +152,8 @@ const adminController = {
             address: req.body.address,
             opening_hours: req.body.opening_hours,
             description: req.body.description,
-            image: restaurant.image
+            image: restaurant.image,
+            CategoryId: req.body.categoryId
           })
             .then((restaurant) => {
               req.flash('success_messages', 'restaurant was successfully to update')
