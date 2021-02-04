@@ -8,11 +8,6 @@
 
 
   <div class="text-white-50 bg-purple">
-    {{!-- <form action="/admin/categories" method="POST">
-      <input type="text" placeholder="name" name="name">
-      <button type="submit">新增</button>
-    </form> --}}
-
     {{#if category}}
     <form action="/admin/categories/{{category.id}}?_method=PUT" method="POST">
       <input type="text" placeholder="name" name="name" value="{{category.name}}">
