@@ -15,6 +15,7 @@ const adminController = {
       .then(restaurants => {
         return res.render('admin/restaurants', { restaurants: restaurants })
       })
+      .catch(err => res.sendStatus(500))
   },
 
   getUsers: (req, res) => {
@@ -22,6 +23,7 @@ const adminController = {
       .then(users => {
         return res.render('admin/users', { users: users })
       })
+      .catch(err => res.sendStatus(500))
   },
 
   toggleAdmin: (req, res) => {
@@ -34,6 +36,7 @@ const adminController = {
         req.flash('success_messages', 'user was succesfully to update')
         res.redirect('/admin/users')
       })
+      .catch(err => res.sendStatus(500))
   },
 
 
@@ -43,6 +46,7 @@ const adminController = {
       .then(categories => {
         return res.render('admin/create', { categories: categories })
       })
+      .catch(err => res.sendStatus(500))
   },
 
   //post create restaurant
@@ -68,6 +72,7 @@ const adminController = {
           req.flash('success_messages', 'restaurant was successfully created')
           return res.redirect('/admin/restaurants')
         })
+          .catch(err => res.sendStatus(500))
       })
     }
     else {
@@ -83,6 +88,7 @@ const adminController = {
         req.flash('success_messages', 'restaurant was successfully created')
         return res.redirect('/admin/restaurants')
       })
+        .catch(err => res.sendStatus(500))
     }
   },
 
@@ -97,6 +103,7 @@ const adminController = {
         restaurant: restaurant
       })
     })
+      .catch(err => res.sendStatus(500))
   },
 
   //get edit restaurant detail
@@ -111,6 +118,7 @@ const adminController = {
             })
           })
       })
+      .catch(err => res.sendStatus(500))
   },
 
   //post edit restaurant detail
@@ -139,7 +147,9 @@ const adminController = {
                 req.flash('success_messages', 'restaurant was successfully to update')
                 res.redirect('/admin/restaurants')
               })
+              .catch(err => res.sendStatus(500))
           })
+          .catch(err => res.sendStatus(500))
       })
     }
     else {
@@ -158,7 +168,9 @@ const adminController = {
               req.flash('success_messages', 'restaurant was successfully to update')
               res.redirect('/admin/restaurants')
             })
+            .catch(err => res.sendStatus(500))
         })
+        .catch(err => res.sendStatus(500))
     }
   },
 
@@ -170,7 +182,9 @@ const adminController = {
           .then((restaurant) => {
             res.redirect('/admin/restaurants')
           })
+          .catch(err => res.sendStatus(500))
       })
+      .catch(err => res.sendStatus(500))
   }
 }
 

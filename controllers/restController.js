@@ -50,7 +50,9 @@ const restController = {
               next: next
             })
           })
+          .catch(err => res.sendStatus(500))
       })
+      .catch(err => res.sendStatus(500))
   },
 
   getRestaurant: (req, res) => {
@@ -63,6 +65,7 @@ const restController = {
           restaurant: restaurant.toJSON()
         })
       })
+      .catch(err => res.sendStatus(500))
   }
 }
 
