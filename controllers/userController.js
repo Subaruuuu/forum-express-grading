@@ -1,6 +1,8 @@
 const bcrypt = require('bcryptjs')
 const db = require('../models')
 const User = db.User
+const Comment = db.Comment
+const Restaurant = db.Restaurant
 
 const fs = require('fs')
 const imgur = require('imgur-node-api')
@@ -56,11 +58,28 @@ const userController = {
 
   //取得使用者資料
   getUser: (req, res) => {
-    return User.findByPk(req.params.id)
+    const UserId = req.params.id
+
+    return User.findByPk(UserId)
       .then(user => {
-        res.render('users', { user: user.toJSON() })
+        Comment.findAndCountAll({ include: Restaurant, where: { UserId } })
+          .then(comment => {
+            const count = comment.count
+
+            const data = comment.rows.map(r => ({
+              ...r.dataValues,
+              restaurantImage: r.Restaurant.image
+            }))
+
+            res.render('users', {
+              user: user.toJSON(),
+              restComment: data,
+              count: count
+            })
+          })
+
       })
-      .catch(err => res.sendStatus(500))
+      .catch(err => console.log(err))
 
   },
 
