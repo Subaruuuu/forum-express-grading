@@ -1,0 +1,12 @@
+<div class="container bg-white d-flex mt-5">
+  <img class="img-responsive center-block" src="{{user.image}}"
+    style="width: 250px;margin-bottom: 25px; margin-top: 25px;">
+  <div class="ml-5 mt-3">
+    <h2>{{user.name}}</h2>
+    <h3>{{user.email}}</h3>
+    <a href='/users/{{user.id}}/edit'>
+      <button type="button" class="btn btn-primary">edit</button>
+    </a>
+  </div>
+
+</div>

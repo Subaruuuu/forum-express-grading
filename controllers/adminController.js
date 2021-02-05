@@ -27,14 +27,13 @@ const adminController = {
   toggleAdmin: (req, res) => {
     return User.findByPk(req.params.id)
       .then(user => {
-        console.log(user)
+        // console.log(user)
         user.update({ isAdmin: !user.isAdmin })
       })
       .then(() => {
         req.flash('success_messages', 'user was succesfully to update')
         res.redirect('/admin/users')
       })
-
   },
 
 
