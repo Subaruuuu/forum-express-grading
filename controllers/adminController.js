@@ -31,10 +31,11 @@ const adminController = {
       .then(user => {
         // console.log(user)
         user.update({ isAdmin: !user.isAdmin })
-      })
-      .then(() => {
-        req.flash('success_messages', 'user was succesfully to update')
-        res.redirect('/admin/users')
+          .then(() => {
+            req.flash('success_messages', 'user was succesfully to update')
+            res.redirect('/admin/users')
+          })
+          .catch(err => res.sendStatus(500))
       })
       .catch(err => res.sendStatus(500))
   },
