@@ -88,6 +88,26 @@ const restController = {
         return res.render('feeds', { restaurants: restaurants, comments: comments })
       })
       .catch(err => res.sendStatus(500))
+  },
+
+  getDashboard: (req, res) => {
+    const RestaurantId = req.params.id
+
+    return Restaurant.findByPk(RestaurantId, { include: Category })
+      .then(restaurant => {
+        Comment.findAndCountAll({ where: { RestaurantId } })
+          .then(comments => {
+            const count = comments.count
+            const rest = restaurant.toJSON()
+
+            res.render('dashboard', {
+              restaurant: rest,
+              count: count
+            })
+          })
+          .catch(err => res.sendStatus(500))
+      })
+      .catch(err => res.sendStatus(500))
   }
 }
 
