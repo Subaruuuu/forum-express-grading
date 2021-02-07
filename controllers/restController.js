@@ -60,11 +60,12 @@ const restController = {
       include: [Category, { model: Comment, include: [User] }]
     })
       .then(restaurant => {
-        // console.log(restaurant.Comments[0].dataValues)
-        return res.render('restaurant', {
-          restaurant: restaurant.toJSON()
-        })
+        restaurant.viewCounts++
+        return restaurant.save()
       })
+      .then(restaurant => res.render('restaurant', {
+        restaurant: restaurant.toJSON()
+      }))
       .catch(err => res.sendStatus(500))
   },
 
