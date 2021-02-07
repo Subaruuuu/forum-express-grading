@@ -17,6 +17,7 @@ let categoryController = {
           return res.render('admin/categories', { categories: categories })
         }
       })
+      .catch(err => res.sendStatus(500))
   },
 
   postCategory: (req, res) => {
@@ -30,6 +31,7 @@ let categoryController = {
         .then((category) => {
           res.redirect('/admin/categories')
         })
+        .catch(err => res.sendStatus(500))
     }
   },
 
@@ -45,6 +47,7 @@ let categoryController = {
               res.redirect('/admin/categories')
             })
         })
+        .catch(err => res.sendStatus(500))
     }
   },
 
@@ -56,6 +59,7 @@ let categoryController = {
             res.redirect('/admin/categories')
           })
       })
+      .catch(err => res.sendStatus(500))
   }
 }
 
