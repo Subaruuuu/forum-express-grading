@@ -60,11 +60,12 @@ const restController = {
       include: [Category, { model: Comment, include: [User] }]
     })
       .then(restaurant => {
-        // console.log(restaurant.Comments[0].dataValues)
-        return res.render('restaurant', {
-          restaurant: restaurant.toJSON()
-        })
+        restaurant.viewCounts++
+        return restaurant.save()
       })
+      .then(restaurant => res.render('restaurant', {
+        restaurant: restaurant.toJSON()
+      }))
       .catch(err => res.sendStatus(500))
   },
 
@@ -86,6 +87,26 @@ const restController = {
     ])
       .then(([restaurants, comments]) => {
         return res.render('feeds', { restaurants: restaurants, comments: comments })
+      })
+      .catch(err => res.sendStatus(500))
+  },
+
+  getDashboard: (req, res) => {
+    const RestaurantId = req.params.id
+
+    return Restaurant.findByPk(RestaurantId, { include: Category })
+      .then(restaurant => {
+        Comment.findAndCountAll({ where: { RestaurantId } })
+          .then(comments => {
+            const count = comments.count
+            const rest = restaurant.toJSON()
+
+            res.render('dashboard', {
+              restaurant: rest,
+              count: count
+            })
+          })
+          .catch(err => res.sendStatus(500))
       })
       .catch(err => res.sendStatus(500))
   }

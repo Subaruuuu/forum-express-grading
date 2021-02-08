@@ -5,7 +5,7 @@ const Comment = db.Comment
 const Restaurant = db.Restaurant
 
 const fs = require('fs')
-const imgur = require('imgur-node-api')
+const imgur = require('imgur')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 
 
@@ -58,6 +58,7 @@ const userController = {
 
   //取得使用者資料
   getUser: (req, res) => {
+    const logUser = req.user
     const UserId = req.params.id
 
     return User.findByPk(UserId)
@@ -74,7 +75,8 @@ const userController = {
             res.render('users', {
               user: user.toJSON(),
               restComment: data,
-              count: count
+              count: count,
+              logUser: logUser
             })
           })
 
@@ -101,23 +103,23 @@ const userController = {
     const { file } = req
 
     if (file) {
-      imgur.setClientID(IMGUR_CLIENT_ID);
-      imgur.upload(file.path, (err, img) => {
-        return User.findByPk(req.params.id)
-          .then(user => {
-            user.update({
-              name: req.body.name,
-              image: file ? img.data.link : restaurant.image
-            })
-              .then(user => {
-                req.flash('success_messages', 'user profile was successfully to update')
-                res.redirect(`/users/${user.id}`)
+      imgur.setClientId(IMGUR_CLIENT_ID)
+      imgur.uploadFile(file.path)
+        .then(img => {
+          return User.findByPk(req.params.id)
+            .then(user => {
+              return user.update({
+                name: req.body.name,
+                image: file ? img.data.link : restaurant.image
               })
-              .catch(err => res.sendStatus(500))
-          })
-      })
-    }
-    else {
+            })
+            .then(user => {
+              req.flash('success_messages', 'User profile was successfully updated')
+              res.redirect(`/users/${user.id}`)
+            })
+            .catch(err => console.log(err))
+        })
+    } else {
       return User.findByPk(req.params.id)
         .then(user => {
           user.update({

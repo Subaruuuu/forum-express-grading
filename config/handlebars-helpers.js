@@ -11,5 +11,7 @@ module.exports = {
 
   moment: function (a) {
     return moment(a).fromNow()
-  }
+  },
+
+  compare: function (x, y) { return (x === y) }
 }
