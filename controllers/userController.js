@@ -58,6 +58,7 @@ const userController = {
 
   //取得使用者資料
   getUser: (req, res) => {
+    const logUser = req.user
     const UserId = req.params.id
 
     return User.findByPk(UserId)
@@ -74,7 +75,8 @@ const userController = {
             res.render('users', {
               user: user.toJSON(),
               restComment: data,
-              count: count
+              count: count,
+              logUser: logUser
             })
           })
 
@@ -99,23 +101,37 @@ const userController = {
     }
 
     const { file } = req
+    const userId = req.params.id
+
+    const imgurUploadPromise = () => {
+      new Promise((resolve, reject) => {
+        imgur.upload(file.path, (err, img) => {
+          User.findByPk(userId)
+            .then(user => {
+              user.update({
+                name: req.body.name,
+                image: file ? img.data.link : restaurant.image
+              })
+              // console.log(user)
+              return resolve(user)
+            })
+            .catch(err => reject('error'))
+        })
+      })
+    }
 
     if (file) {
-      imgur.setClientID(IMGUR_CLIENT_ID);
-      imgur.upload(file.path, (err, img) => {
-        return User.findByPk(req.params.id)
-          .then(user => {
-            user.update({
-              name: req.body.name,
-              image: file ? img.data.link : restaurant.image
-            })
-              .then(user => {
-                req.flash('success_messages', 'user profile was successfully to update')
-                res.redirect(`/users/${user.id}`)
-              })
-              .catch(err => res.sendStatus(500))
-          })
-      })
+      imgur.setClientID(IMGUR_CLIENT_ID)
+
+      imgurUploadPromise()
+        .then(user => {
+          console.log(user)
+          req.flash('success_messages', 'user profile was successfully to update')
+          res.redirect(`/users/${user.id}`)
+        })
+        .catch(err => res.sendStatus(500))
+
+
     }
     else {
       return User.findByPk(req.params.id)

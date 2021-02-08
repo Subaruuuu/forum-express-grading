@@ -5,9 +5,12 @@
     <h2>{{user.name}}</h2>
     <h3>{{user.email}}</h3><br>
     <h6>{{count}} 已評論餐廳</h6><br>
+    {{#if (compare user.name logUser.name)}}
     <a href='/users/{{user.id}}/edit'>
       <button type="button" class="btn btn-primary">edit</button>
     </a>
+    {{/if}}
+
   </div>
 
 </div>
