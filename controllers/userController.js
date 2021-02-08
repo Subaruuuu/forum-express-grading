@@ -5,7 +5,7 @@ const Comment = db.Comment
 const Restaurant = db.Restaurant
 
 const fs = require('fs')
-const imgur = require('imgur-node-api')
+const imgur = require('imgur')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 
 
@@ -101,39 +101,25 @@ const userController = {
     }
 
     const { file } = req
-    const userId = req.params.id
 
-    const imgurUploadPromise = () => {
-      new Promise((resolve, reject) => {
-        imgur.upload(file.path, (err, img) => {
-          User.findByPk(userId)
+    if (file) {
+      imgur.setClientId(IMGUR_CLIENT_ID)
+      imgur.uploadFile(file.path)
+        .then(img => {
+          return User.findByPk(req.params.id)
             .then(user => {
-              user.update({
+              return user.update({
                 name: req.body.name,
                 image: file ? img.data.link : restaurant.image
               })
-              // console.log(user)
-              return resolve(user)
             })
-            .catch(err => reject('error'))
+            .then(user => {
+              req.flash('success_messages', 'User profile was successfully updated')
+              res.redirect(`/users/${user.id}`)
+            })
+            .catch(err => console.log(err))
         })
-      })
-    }
-
-    if (file) {
-      imgur.setClientID(IMGUR_CLIENT_ID)
-
-      imgurUploadPromise()
-        .then(user => {
-          console.log(user)
-          req.flash('success_messages', 'user profile was successfully to update')
-          res.redirect(`/users/${user.id}`)
-        })
-        .catch(err => res.sendStatus(500))
-
-
-    }
-    else {
+    } else {
       return User.findByPk(req.params.id)
         .then(user => {
           user.update({
