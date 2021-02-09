@@ -32,10 +32,11 @@ const restController = {
         const prev = page - 1 < 1 ? 1 : page - 1
         const next = page + 1 > pages ? pages : page + 1
 
-        const data = result.rows.map(eachRest => ({
-          ...eachRest.dataValues,
-          description: eachRest.dataValues.description.substring(0, 50),
-          categoryName: eachRest.Category.name
+        const data = result.rows.map(r => ({
+          ...r.dataValues,
+          description: r.dataValues.description.substring(0, 50),
+          categoryName: r.Category.name,
+          isFavorited: req.user.FavoritedRestaurants.map(d => d.id).includes(r.id)
         }))
 
         Category.findAll({ raw: true, nest: true })
@@ -50,9 +51,9 @@ const restController = {
               next: next
             })
           })
-          .catch(err => res.sendStatus(500))
+          .catch(err => console.log(err))
       })
-      .catch(err => res.sendStatus(500))
+      .catch(err => console.log(err))
   },
 
   getRestaurant: (req, res) => {
