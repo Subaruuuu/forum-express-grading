@@ -59,6 +59,10 @@ module.exports = (app, passport) => {
   app.post('/favorite/:restaurantId', authenticated, userController.addFavorite)
   app.delete('/favorite/:restaurantId', authenticated, userController.removeFavorite)
 
+  //like or unlike
+  app.post('/like/:restaurantId', authenticated, userController.addLike)
+  app.delete('/like/:restaurantId', authenticated, userController.removeLike)
+
   //restaurants
   app.get('/admin/restaurants', authenticatedAdmin, adminController.getRestaurants)
   app.get('/admin/restaurants/create', authenticatedAdmin, adminController.createRestaurant)

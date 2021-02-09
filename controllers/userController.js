@@ -1,9 +1,6 @@
 const bcrypt = require('bcryptjs')
 const db = require('../models')
-const User = db.User
-const Comment = db.Comment
-const Restaurant = db.Restaurant
-const Favorite = db.Favorite
+const { User, Comment, Restaurant, Favorite, Like } = db
 
 const fs = require('fs')
 const imgur = require('imgur')
@@ -61,11 +58,11 @@ const userController = {
   //取得使用者資料
   getUser: (req, res) => {
     const logUser = req.user
-    const UserId = req.params.id
+    const userId = req.params.id
 
-    return User.findByPk(UserId)
+    return User.findByPk(userId)
       .then(user => {
-        Comment.findAndCountAll({ include: Restaurant, where: { UserId } })
+        Comment.findAndCountAll({ include: Restaurant, where: { userId } })
           .then(comment => {
             const count = comment.count
 
@@ -145,6 +142,7 @@ const userController = {
       .then((restaurant) => {
         return res.redirect('back')
       })
+      .catch(err => console.log(err))
   },
 
   removeFavorite: (req, res) => {
@@ -159,7 +157,39 @@ const userController = {
           .then((restaurant) => {
             return res.redirect('back')
           })
+          .catch(err => console.log(err))
       })
+      .catch(err => console.log(err))
+  },
+
+  addLike: (req, res) => {
+    const userId = helpers.getUser(req).id
+    return Like.create({
+      UserId: userId,
+      RestaurantId: req.params.restaurantId
+    })
+      .then(restaurant => {
+        return res.redirect('back')
+      })
+      .catch(err => console.log(err))
+  },
+
+  removeLike: (req, res) => {
+    const userId = helpers.getUser(req).id
+    return Like.findOne({
+      where: {
+        UserId: userId,
+        RestaurantId: req.params.restaurantId
+      }
+    })
+      .then(like => {
+        like.destroy()
+          .then(restaurant => {
+            return res.redirect('back')
+          })
+          .catch(err => console.log(err))
+      })
+      .catch(err => console.log(err))
   }
 }
 
