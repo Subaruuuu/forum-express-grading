@@ -7,6 +7,7 @@ const Restaurant = db.Restaurant
 const fs = require('fs')
 const imgur = require('imgur')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
+const helpers = require('../_helpers')
 
 
 const userController = {
@@ -103,8 +104,7 @@ const userController = {
     const { file } = req
 
     if (file) {
-      imgur.setClientId(IMGUR_CLIENT_ID)
-      imgur.uploadFile(file.path)
+      helpers.imgurUploadPromise(file, IMGUR_CLIENT_ID)
         .then(img => {
           return User.findByPk(req.params.id)
             .then(user => {
@@ -122,7 +122,7 @@ const userController = {
     } else {
       return User.findByPk(req.params.id)
         .then(user => {
-          user.update({
+          return user.update({
             name: req.body.name,
             image: user.image
           })
