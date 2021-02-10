@@ -10,7 +10,7 @@ module.exports = {
       name: 'root',
       createdAt: new Date(),
       updatedAt: new Date(),
-      image: `https://loremflickr.com/320/240/restaurant,food/?random=${Math.random() * 100}`
+      image: `https://loremflickr.com/320/240/avatar/?lock=${Math.random() * 100}`
     }, {
       id: 2,
       email: 'user1@example.com',
@@ -19,7 +19,7 @@ module.exports = {
       name: 'user1',
       createdAt: new Date(),
       updatedAt: new Date(),
-      image: `https://loremflickr.com/320/240/restaurant,food/?random=${Math.random() * 100}`
+      image: `https://loremflickr.com/320/240/avatar/?lock=${Math.random() * 100}`
     }], {})
   },
 
