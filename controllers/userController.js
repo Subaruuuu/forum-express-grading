@@ -14,8 +14,6 @@ const userController = {
   },
 
   signUp: (req, res) => {
-
-    // confirm password
     if (req.body.passwordCheck !== req.body.password) {
       req.flash('error_messages', '兩次密碼輸入不同！')
       return res.redirect('/signup')
@@ -57,30 +55,43 @@ const userController = {
 
   //取得使用者資料
   getUser: (req, res) => {
-    const logUser = req.user
+    const loginUser = helpers.getUser(req)
     const userId = req.params.id
 
-    return User.findByPk(userId)
+    return User.findByPk(userId, {
+      include: [{ model: Comment, include: Restaurant },
+      { model: User, as: 'Followers' },
+      { model: User, as: 'Followings' },
+      { model: Restaurant, as: 'FavoritedRestaurants' }
+      ]
+    })
       .then(user => {
-        Comment.findAndCountAll({ include: Restaurant, where: { userId } })
-          .then(comment => {
-            const count = comment.count
+        const userData = user.dataValues
+        const { FavoritedRestaurants, Followings, Followers, Comments } = userData
+        const followersData = Followers.map(d => ({ ...d.dataValues }))
+        const favoriteRestData = FavoritedRestaurants.map(d => ({ ...d.dataValues }))
+        const followingData = Followings.map(d => ({ ...d.dataValues }))
+        const commentsData = Comments.map(d => ({ ...d.dataValues }))
+        const commentOnRestData = commentsData.map(d => ({ ...d.Restaurant.dataValues }))
+        const isFollowed = loginUser.Followings.map(d => d.id).includes(user.id)
 
-            const data = comment.rows.map(r => ({
-              ...r.dataValues,
-              restaurantImage: r.Restaurant.image
-            }))
+        const allIds = commentOnRestData.map(r => r.id)
+        const uniqCommentOnRestData = commentOnRestData.filter(({ id }, index) => !allIds.includes(id, index + 1))
 
-            res.render('users', {
-              user: user.toJSON(),
-              restComment: data,
-              count: count,
-              logUser: logUser
-            })
-          })
+
+        res.render('users', {
+          user: user.toJSON(),
+          isFollowed: isFollowed,
+          loginUser: loginUser,
+          uniqCommentOnRestData: uniqCommentOnRestData,
+          favoriteRestData: favoriteRestData,
+          followersData: followersData,
+          followingData: followingData,
+        })
+
 
       })
-      .catch(err => res.sendStatus(500))
+      .catch(err => console.log(err))
 
   },
 
