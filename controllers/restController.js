@@ -7,6 +7,8 @@ const pageLimit = 10
 
 const restController = {
   getRestaurants: (req, res) => {
+    const loginUser = helpers.getUser(req)
+
     const whereQuery = {}
     let categoryId = ''
     if (req.query.categoryId) {
@@ -34,7 +36,7 @@ const restController = {
           ...r.dataValues,
           description: r.dataValues.description.substring(0, 50),
           categoryName: r.Category.name,
-          isFavorited: req.user.FavoritedRestaurants.map(d => d.id).includes(r.id),
+          isFavorited: loginUser.FavoritedRestaurants.map(d => d.id).includes(r.id),
           isLiked: req.user.LikedRestaurants.map(d => d.id).includes(r.id)
         }))
 
@@ -81,6 +83,30 @@ const restController = {
       .catch(err => res.sendStatus(500))
   },
 
+  //人氣餐廳
+  getTopRestaurant: (req, res) => {
+    const loginUser = helpers.getUser(req)
+
+    return Restaurant.findAll({
+      include: { model: User, as: 'FavoritedUsers' }
+    }).then(restaurants => {
+      restaurants = restaurants.map(restaurant => ({
+        ...restaurant.dataValues,
+        description: restaurant.dataValues.description.substring(0, 50),
+        favoriteUsersCount: restaurant.FavoritedUsers.length,
+        isFavorited: loginUser.FavoritedRestaurants.map(d => d.id).includes(restaurant.id)
+      }))
+      restaurants = restaurants.sort((a, b) => b.favoriteUsersCount - a.favoriteUsersCount)
+      const restaurantsTop10 = restaurants.slice(0, 10)
+      res.render('topRestaurant', {
+        restaurants: restaurantsTop10
+      })
+    })
+      .catch(err => console.log(err))
+
+  },
+
+  //最新動態
   getFeeds: (req, res) => {
     return Promise.all([
       Restaurant.findAll({
@@ -103,6 +129,7 @@ const restController = {
       .catch(err => res.sendStatus(500))
   },
 
+  //dashboard
   getDashboard: (req, res) => {
     const RestaurantId = req.params.id
 

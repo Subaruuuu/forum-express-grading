@@ -192,12 +192,10 @@ const userController = {
       .catch(err => console.log(err))
   },
 
+  //美食達人
   getTopUser: (req, res) => {
-    // 撈出所有 User 與 followers 資料
     return User.findAll({
-      include: [
-        { model: User, as: 'Followers' }
-      ]
+      include: [{ model: User, as: 'Followers' }]
     }).then(users => {
       users = users.map(user => ({
         ...user.dataValues,
@@ -237,6 +235,7 @@ const userController = {
       })
       .catch(err => console.log(err))
   }
+
 }
 
 module.exports = userController
