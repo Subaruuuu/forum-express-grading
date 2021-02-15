@@ -7,15 +7,16 @@ const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 
 
 const adminService = {
+  //所有餐廳
   getRestaurants: (req, res, callback) => {
     return Restaurant.findAll({ raw: true, nest: true, include: [Category] })
       .then(restaurants => {
         callback({ restaurants: restaurants })
-        // return res.render('admin/restaurants', { restaurants: restaurants })
       })
       .catch(err => res.sendStatus(500))
   },
 
+  //單個餐廳
   getRestaurant: (req, res, callback) => {
     return Restaurant.findByPk(req.params.id, {
       raw: true,
@@ -23,8 +24,23 @@ const adminService = {
       include: [Category]
     }).then(restaurant => {
       callback({ restaurant: restaurant })
-      // return res.render('admin/restaurant', {restaurant: restaurant})
     })
+      .catch(err => res.sendStatus(500))
+  },
+
+  //類別
+  getCategories: (req, res, callback) => {
+    return Category.findAll({ raw: true, nest: true })
+      .then(categories => {
+        if (req.params.id) {
+          Category.findByPk(req.params.id)
+            .then((category) => {
+              callback({ categories: categories, category: category.toJSON() })
+            })
+        } else {
+          callback({ categories: categories })
+        }
+      })
       .catch(err => res.sendStatus(500))
   }
 }
