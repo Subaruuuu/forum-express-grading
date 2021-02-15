@@ -7,6 +7,7 @@ const Category = db.Category
 const imgur = require('imgur-node-api')
 const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 
+
 const adminService = require('../../services/adminService')
 
 const adminController = {
@@ -19,6 +20,12 @@ const adminController = {
 
   getRestaurant: (req, res) => {
     adminService.getRestaurant(req, res, (data) => {
+      return res.json(data)
+    })
+  },
+
+  postRestaurant: (req, res) => {
+    adminService.postRestaurant(req, res, (data) => {
       return res.json(data)
     })
   },
