@@ -26,6 +26,18 @@ const adminService = {
       callback({ restaurant: restaurant })
     })
       .catch(err => res.sendStatus(500))
+  },
+
+  deleteRestaurant: (req, res, callback) => {
+    return Restaurant.findByPk(req.params.id)
+      .then((restaurant) => {
+        restaurant.destroy()
+          .then((restaurant) => {
+            callback({ status: 'success', message: '' })
+          })
+          .catch(err => res.sendStatus(500))
+      })
+      .catch(err => res.sendStatus(500))
   }
 }
 
