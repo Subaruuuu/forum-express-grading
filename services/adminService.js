@@ -14,6 +14,18 @@ const adminService = {
         // return res.render('admin/restaurants', { restaurants: restaurants })
       })
       .catch(err => res.sendStatus(500))
+  },
+
+  getRestaurant: (req, res, callback) => {
+    return Restaurant.findByPk(req.params.id, {
+      raw: true,
+      nest: true,
+      include: [Category]
+    }).then(restaurant => {
+      callback({ restaurant: restaurant })
+      // return res.render('admin/restaurant', {restaurant: restaurant})
+    })
+      .catch(err => res.sendStatus(500))
   }
 }
 

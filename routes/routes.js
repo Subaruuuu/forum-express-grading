@@ -5,7 +5,6 @@ const helpers = require('../_helpers')
 
 const restController = require('../controllers/restController')
 const adminController = require('../controllers/adminController')
-const apiAdminController = require('../controllers/api/adminController')
 const userController = require('../controllers/userController')
 const categoryController = require('../controllers/categoryController.js')
 const commentController = require('../controllers/commentController.js')
@@ -30,9 +29,6 @@ const authenticatedAdmin = (req, res, next) => {
   }
   res.redirect('/signin')
 }
-
-//api
-router.get('/api/admin/restaurants', apiAdminController.getRestaurants)
 
 //Top Restaurant
 router.get('/restaurants/top', authenticated, restController.getTopRestaurant)
