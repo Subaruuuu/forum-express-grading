@@ -11,6 +11,18 @@ const IMGUR_CLIENT_ID = process.env.IMGUR_CLIENT_ID
 const adminService = require('../../services/adminService')
 
 const adminController = {
+  getUsers: (req, res) => {
+    adminService.getUsers(req, res, (data) => {
+      return res.json(data)
+    })
+  },
+
+  toggleAdmin: (req, res) => {
+    adminService.toggleAdmin(req, res, (data) => {
+      return res.json(data)
+    })
+  },
+
   //get all restaurant
   getRestaurants: (req, res) => {
     adminService.getRestaurants(req, res, (data) => {
@@ -24,8 +36,20 @@ const adminController = {
     })
   },
 
+  createRestaurant: (req, res) => {
+    adminService.createRestaurant(req, res, (data) => {
+      return res.json(data)
+    })
+  },
+
   postRestaurant: (req, res) => {
     adminService.postRestaurant(req, res, (data) => {
+      return res.json(data)
+    })
+  },
+
+  editRestaurant: (req, res) => {
+    adminService.editRestaurant(req, res, (data) => {
       return res.json(data)
     })
   },

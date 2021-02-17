@@ -178,10 +178,9 @@ const userController = {
     return Like.create({
       UserId: userId,
       RestaurantId: req.params.restaurantId
+    }).then(restaurant => {
+      return res.redirect('back')
     })
-      .then(restaurant => {
-        return res.redirect('back')
-      })
       .catch(err => console.log(err))
   },
 
@@ -192,14 +191,10 @@ const userController = {
         UserId: userId,
         RestaurantId: req.params.restaurantId
       }
+    }).then(like => {
+      like.destroy()
+      return res.redirect('back')
     })
-      .then(like => {
-        like.destroy()
-          .then(restaurant => {
-            return res.redirect('back')
-          })
-          .catch(err => console.log(err))
-      })
       .catch(err => console.log(err))
   },
 
@@ -239,10 +234,7 @@ const userController = {
     })
       .then((followship) => {
         followship.destroy()
-          .then((followship) => {
-            return res.redirect('back')
-          })
-          .catch(err => console.log(err))
+        return res.redirect('back')
       })
       .catch(err => console.log(err))
   }

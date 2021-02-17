@@ -18,34 +18,24 @@ const adminController = {
   },
 
   getUsers: (req, res) => {
-    return User.findAll({ raw: true, nest: true })
-      .then(users => {
-        return res.render('admin/users', { users: users })
-      })
-      .catch(err => res.sendStatus(500))
+    adminService.getUsers(req, res, (data) => {
+      return res.render('admin/users', data)
+    })
   },
 
   toggleAdmin: (req, res) => {
-    return User.findByPk(req.params.id)
-      .then(user => {
-        user.update({ isAdmin: !user.isAdmin })
-          .then(() => {
-            req.flash('success_messages', 'user was succesfully to update')
-            res.redirect('/admin/users')
-          })
-          .catch(err => res.sendStatus(500))
-      })
-      .catch(err => res.sendStatus(500))
+    adminService.toggleAdmin(req, res, (data) => {
+      if (data['status'] === 'success') {
+        return res.redirect('/admin/users')
+      }
+    })
   },
-
 
   //get create restaurant page
   createRestaurant: (req, res) => {
-    Category.findAll({ raw: true, nest: true })
-      .then(categories => {
-        return res.render('admin/create', { categories: categories })
-      })
-      .catch(err => res.sendStatus(500))
+    adminService.createRestaurant(req, res, (data) => {
+      return res.render('admin/create', data)
+    })
   },
 
   //post create restaurant
@@ -69,17 +59,9 @@ const adminController = {
 
   //get edit restaurant detail
   editRestaurant: (req, res) => {
-    return Restaurant.findByPk(req.params.id, { raw: true, nest: true })
-      .then(restaurant => {
-        Category.findAll({ raw: true, nest: true })
-          .then(categories => {
-            return res.render('admin/create', {
-              restaurant: restaurant,
-              categories: categories
-            })
-          })
-      })
-      .catch(err => res.sendStatus(500))
+    adminService.editRestaurant(req, res, (data) => {
+      return res.render('admin/create', data)
+    })
   },
 
   //post edit restaurant detail
