@@ -165,10 +165,7 @@ const userController = {
     })
       .then((favorite) => {
         favorite.destroy()
-          .then((restaurant) => {
-            return res.redirect('back')
-          })
-          .catch(err => console.log(err))
+        return res.redirect('back')
       })
       .catch(err => console.log(err))
   },

@@ -1,5 +1,6 @@
 const db = require('../models')
-const { Restaurant, Category, Comment, User } = db
+const { Restaurant, Category, Comment, User, Favorite } = db
+const sequelize = require('sequelize')
 
 const helpers = require('../_helpers')
 
@@ -88,18 +89,24 @@ const restController = {
     const loginUser = helpers.getUser(req)
 
     return Restaurant.findAll({
-      include: { model: User, as: 'FavoritedUsers' }
+      attributes: {
+        include: [
+          [sequelize.literal('(SELECT COUNT(*) FROM Favorites WHERE Favorites.RestaurantId = Restaurant.id)'), 'FavoritedCount']
+        ]
+      },
+      order: [
+        [sequelize.literal('FavoritedCount'), 'DESC']
+      ],
+      raw: true, nest: true,
+      limit: 10,
     }).then(restaurants => {
       restaurants = restaurants.map(restaurant => ({
-        ...restaurant.dataValues,
-        description: restaurant.dataValues.description.substring(0, 50),
-        favoriteUsersCount: restaurant.FavoritedUsers.length,
+        ...restaurant,
+        description: restaurant.description.substring(0, 50),
         isFavorited: loginUser.FavoritedRestaurants.map(d => d.id).includes(restaurant.id)
       }))
-      restaurants = restaurants.sort((a, b) => b.favoriteUsersCount - a.favoriteUsersCount)
-      const restaurantsTop10 = restaurants.slice(0, 10)
       res.render('topRestaurant', {
-        restaurants: restaurantsTop10
+        restaurants: restaurants
       })
     })
       .catch(err => console.log(err))
