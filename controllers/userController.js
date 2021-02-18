@@ -146,9 +146,13 @@ const userController = {
   },
 
   addFavorite: (req, res) => {
-    return Favorite.create({
-      UserId: req.user.id,
-      RestaurantId: req.params.restaurantId
+    const userId = helpers.getUser(req).id
+    return Favorite.findOrCreate({
+      where: { RestaurantId: req.params.restaurantId },
+      defaults: {
+        UserId: userId,
+        RestaurantId: req.params.restaurantId
+      }
     })
       .then((restaurant) => {
         return res.redirect('back')
@@ -157,13 +161,15 @@ const userController = {
   },
 
   removeFavorite: (req, res) => {
+    const userId = helpers.getUser(req).id
     return Favorite.findOne({
       where: {
-        UserId: req.user.id,
+        UserId: userId,
         RestaurantId: req.params.restaurantId
       }
     })
       .then((favorite) => {
+        if (favorite === null) return res.redirect('back')
         favorite.destroy()
         return res.redirect('back')
       })
@@ -172,9 +178,12 @@ const userController = {
 
   addLike: (req, res) => {
     const userId = helpers.getUser(req).id
-    return Like.create({
-      UserId: userId,
-      RestaurantId: req.params.restaurantId
+    return Like.findOrCreate({
+      where: { RestaurantId: req.params.restaurantId },
+      defaults: {
+        UserId: userId,
+        RestaurantId: req.params.restaurantId
+      }
     }).then(restaurant => {
       return res.redirect('back')
     })
@@ -189,6 +198,7 @@ const userController = {
         RestaurantId: req.params.restaurantId
       }
     }).then(like => {
+      if (like === null) return res.redirect('back')
       like.destroy()
       return res.redirect('back')
     })
@@ -212,9 +222,13 @@ const userController = {
   },
 
   addFollowing: (req, res) => {
-    return Followship.create({
-      followerId: req.user.id,
-      followingId: req.params.userId
+    const userId = helpers.getUser(req).id
+    return Followship.findOrCreate({
+      where: { followingId: req.params.userId },
+      defaults: {
+        followerId: userId,
+        followingId: req.params.userId
+      }
     })
       .then((followship) => {
         return res.redirect('back')
@@ -223,13 +237,15 @@ const userController = {
   },
 
   removeFollowing: (req, res) => {
+    const userId = helpers.getUser(req).id
     return Followship.findOne({
       where: {
-        followerId: req.user.id,
+        followerId: userId,
         followingId: req.params.userId
       }
     })
       .then((followship) => {
+        if (followship === null) return res.redirect('back')
         followship.destroy()
         return res.redirect('back')
       })
