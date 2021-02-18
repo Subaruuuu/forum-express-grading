@@ -19,6 +19,7 @@ const authenticatedAdmin = (req, res, next) => {
 const adminController = require('../controllers/api/adminController')
 const categoryController = require('../controllers/api/categoryController')
 const userController = require('../controllers/api/userController.js')
+const commentController = require('../controllers/api/commentController')
 
 //admin users
 router.get('/admin/users', authenticatedAdmin, adminController.getUsers)
@@ -39,6 +40,10 @@ router.get('/admin/categories', authenticatedAdmin, categoryController.getCatego
 router.post('/admin/categories', authenticatedAdmin, categoryController.postCategory)
 router.put('/admin/categories/:id', authenticatedAdmin, categoryController.putCategory)
 router.delete('/admin/categories/:id', authenticatedAdmin, categoryController.deleteCategory)
+
+//comment
+router.post('/comments', authenticated, commentController.postComment)
+router.delete('/comments/:id', authenticatedAdmin, commentController.deleteComment)
 
 //admin signin/signup
 router.post('/signin', userController.signIn)
