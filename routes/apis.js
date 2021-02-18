@@ -25,6 +25,12 @@ const commentController = require('../controllers/api/commentController')
 router.get('/admin/users', authenticatedAdmin, adminController.getUsers)
 router.put('/admin/users/:id/toggleAdmin', adminController.toggleAdmin)
 
+//user
+router.get('/users/top', authenticated, userController.getTopUser)
+router.get('/users/:id', authenticated, userController.getUser)
+router.get('/users/:id/edit', authenticated, userController.editUser)
+router.put('/users/:id', authenticated, upload.single('image'), userController.putUser)
+
 //admin restaurants
 router.get('/admin/restaurants', authenticatedAdmin, adminController.getRestaurants)
 router.get('/admin/restaurants/:id', authenticatedAdmin, adminController.getRestaurant)
@@ -44,6 +50,18 @@ router.delete('/admin/categories/:id', authenticatedAdmin, categoryController.de
 //comment
 router.post('/comments', authenticated, commentController.postComment)
 router.delete('/comments/:id', authenticatedAdmin, commentController.deleteComment)
+
+//add or remove favorite
+router.post('/favorite/:restaurantId', authenticated, userController.addFavorite)
+router.delete('/favorite/:restaurantId', authenticated, userController.removeFavorite)
+
+//following User
+router.post('/following/:userId', authenticated, userController.addFollowing)
+router.delete('/following/:userId', authenticated, userController.removeFollowing)
+
+//like or unlike
+router.post('/like/:restaurantId', authenticated, userController.addLike)
+router.delete('/like/:restaurantId', authenticated, userController.removeLike)
 
 //admin signin/signup
 router.post('/signin', userController.signIn)
