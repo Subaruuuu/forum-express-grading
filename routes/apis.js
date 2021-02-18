@@ -20,6 +20,14 @@ const adminController = require('../controllers/api/adminController')
 const categoryController = require('../controllers/api/categoryController')
 const userController = require('../controllers/api/userController.js')
 const commentController = require('../controllers/api/commentController')
+const restController = require('../controllers/api/restController')
+
+//for normal user
+router.get('/restaurants', authenticated, restController.getRestaurants)
+router.get('/restaurants/top', authenticated, restController.getTopRestaurant)
+router.get('/restaurants/feeds', authenticated, restController.getFeeds)
+router.get('/restaurants/:id', authenticated, restController.getRestaurant)
+router.get('/restaurants/:id/dashboard', authenticated, restController.getDashboard)
 
 //admin users
 router.get('/admin/users', authenticatedAdmin, adminController.getUsers)
